@@ -8,6 +8,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
+  /* RECE credential badge */
+  .rece-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--green); color: white;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
+    padding: 3px 10px; border-radius: 50px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .rece-badge::before { content: '✓'; font-size: 0.75rem; }
+
   /* Program card images */
   .program-img {
     width: calc(100% + 56px);
@@ -148,16 +159,15 @@
     <div>
       <div class="section-label">Our Philosophy</div>
       <h2>A Place to Grow, Explore & Belong</h2>
-      <p class="section-sub">We offer a fun, safe and nurturing environment where children are encouraged to develop their full potential — with staff and parents working hand in hand.</p>
+      <p class="section-sub">We offer a fun, safe, nurturing and caring environment in which children are encouraged to develop their potential. Staff and parents work together to offer a stimulating setting for children to increase their sense of self-worth, with the following results:</p>
       <div class="phil-grid">
-        <div class="phil-card"><div class="icon">🤝</div><h4>Trust & Connection</h4><p>Children learn to trust teachers, adults and peers in a caring, consistent environment.</p></div>
-        <div class="phil-card"><div class="icon">🌟</div><h4>Independence</h4><p>Children choose their own activities, fostering confidence and self-direction.</p></div>
-        <div class="phil-card"><div class="icon">🎨</div><h4>Creative Materials</h4><p>Hands-on exploration with crafts, tools and materials used properly and imaginatively.</p></div>
-        <div class="phil-card"><div class="icon">🎓</div><h4>School Readiness</h4><p>Building the foundational skills children need to thrive in their future education.</p></div>
-        <div class="phil-card"><div class="icon">👐</div><h4>Cooperation</h4><p>Learning to share, take turns and be an engaged, respectful part of a group.</p></div>
+        <div class="phil-card"><div class="icon">🤝</div><h4>Trust & Connection</h4><p>Our children will learn to trust the teacher, other adults and other children.</p></div>
+        <div class="phil-card"><div class="icon">🌟</div><h4>Independence</h4><p>They will foster independence through being able to choose their own activities.</p></div>
+        <div class="phil-card"><div class="icon">👐</div><h4>Cooperation</h4><p>They will learn cooperation through sharing, waiting one's turn and being part of a group.</p></div>
+        <div class="phil-card"><div class="icon">🎨</div><h4>Creative Materials</h4><p>They will learn to use materials properly and creatively.</p></div>
+        <div class="phil-card"><div class="icon">🎓</div><h4>School Readiness</h4><p>They will gain the skills required to succeed in their future education.</p></div>
         <div class="phil-card"><div class="icon">🌿</div><h4>Non-Profit & Parent-Led</h4><p>A true cooperative — parents and teachers working together for every child's benefit.</p></div>
       </div>
-      <div class="phil-badge">🏫 Located at Town Hall, 191 Main St S., Rockwood, ON</div>
     </div>
     <div class="phil-image">
       <img src="images/kids-3.jpg" alt="Children at play">
@@ -245,7 +255,7 @@
     <div class="section-label">Our Home</div>
     <h2>A Community Space Since 1970</h2>
     <p>Rockwood Nursery School has called the historic Rockwood Town Hall home for over 50 years. It's a bright, spacious, welcoming space — right in the heart of the community at 191 Main St S.</p>
-    <p>As a parent-led, non-profit cooperative, we keep our fees among the most affordable in the region. Parents play an active role through duty days and the Board of Directors, which is what makes our low monthly fees possible.</p>
+    <p>As a parent-led, non-profit cooperative, we keep our fees among the most affordable in the region. Parents play an active role when they volunteer as part of one of the many committees that make our school run, which is what makes our low monthly fees possible.</p>
     <div class="cwelcc-box">
       <h4>💰 CWELCC — Canada-Wide Early Learning & Child Care</h4>
       <p>Rockwood Nursery School is a proud participant in the <a href="http://www.ontario.ca/page/canada-ontario-early-years-and-child-care-agreement" target="_blank">Canada-Wide Early Learning and Child Care (CWELCC) Program</a>, a federal-provincial initiative working toward $10/day child care across Canada. This means even greater savings for eligible families enrolled in our programs.</p>
@@ -262,7 +272,8 @@
     <div class="teacher-card">
       <div class="teacher-photo"><img src="images/teacher-nicki.jpg" alt="Nicki Barens" style="object-position: center 20%;"></div>
       <div class="teacher-info">
-        <div class="teacher-role">Registered ECE</div>
+        <div class="rece-badge">Registered ECE</div>
+        <div class="teacher-role">Early Childhood Educator</div>
         <div class="teacher-name">Nicki Barens</div>
         <div class="teacher-years">35+ Years at RNS</div>
         <div class="teacher-bio">A beloved community figure known for her boundless patience and warmth, Nicki has shaped the lives of generations of Rockwood children. Outside the classroom she's a skating enthusiast, master knitter, dedicated pickleball player, and proud grandmother.</div>
@@ -271,7 +282,8 @@
     <div class="teacher-card">
       <div class="teacher-photo"><img src="images/teacher-victoria.jpg" alt="Victoria Caulfeild"></div>
       <div class="teacher-info">
-        <div class="teacher-role">Registered ECE</div>
+        <div class="rece-badge">Registered ECE</div>
+        <div class="teacher-role">Early Childhood Educator</div>
         <div class="teacher-name">Victoria Caulfeild</div>
         <div class="teacher-years">15+ Years at RNS</div>
         <div class="teacher-bio">Meticulously organized and always smiling, Victoria has a gift for creating opportunities where every child can flourish at their own pace. When she's not in the classroom, you'll find her hiking, cycling, kayaking, or on a yoga mat.</div>
@@ -280,16 +292,17 @@
     <div class="teacher-card">
       <div class="teacher-photo"><img src="images/teacher-krista.jpg" alt="Krista Denny"></div>
       <div class="teacher-info">
-        <div class="teacher-role">Teacher</div>
+        <div class="teacher-role">Teaching Assistant</div>
         <div class="teacher-name">Krista Denny</div>
         <div class="teacher-years">4 Years at RNS</div>
-        <div class="teacher-bio">Energetic and endlessly enthusiastic, Krista brings a joyful spirit to everything she does — whether that's building block towers, hosting an elaborate tea party, or cheering kids on the ice as a skating coach. Her passion for play is absolutely contagious.</div>
+        <div class="teacher-bio">Warm, dependable and endlessly enthusiastic, Krista is a valued member of both the RNS team and the broader Rockwood community. A proud mom of two, she brings genuine heart to everything she does in the classroom. Outside of school she is a passionate figure skating coach — and that same dedication and energy shines through every day with the children.</div>
       </div>
     </div>
     <div class="teacher-card">
       <div class="teacher-photo"><img src="images/teacher-ashley.jpg" alt="Ashley Cypcarz" style="object-position: center 15%;"></div>
       <div class="teacher-info">
-        <div class="teacher-role">Registered ECE</div>
+        <div class="rece-badge">Registered ECE</div>
+        <div class="teacher-role">Early Childhood Educator</div>
         <div class="teacher-name">Ashley Cypcarz</div>
         <div class="teacher-years">Newest Team Member</div>
         <div class="teacher-bio">Committed to building inclusive, welcoming spaces where every child feels seen and valued, Ashley brings warmth and creativity to the classroom every day. Outside of school she loves crafting, scrapbooking, dancing, and spending quality time with her own children.</div>
@@ -312,9 +325,9 @@
   <p class="section-sub">We combine qualified teaching with community spirit and affordable pricing.</p>
   <div class="why-grid">
     <div class="why-card"><div class="why-icon">🏫</div><h3>Great Space</h3><p>A bright, large and open setting with Montessori-influenced, ECE certified teachers and excellent adult-to-child ratios.</p></div>
-    <div class="why-card"><div class="why-icon">🧠</div><h3>Practical Learning</h3><p>Multiple learning centers, weekly themes, circle time, story time, crafts, nutritious snacks and active daily play.</p></div>
+    <div class="why-card"><div class="why-icon">🧠</div><h3>Practical Learning</h3><p>Multiple learning centers, weekly themes, circle time, story time, crafts and active daily play.</p></div>
     <div class="why-card"><div class="why-icon">👨‍👩‍👧</div><h3>Parents Welcome</h3><p>As a cooperative, parents are integral. Low tuition fees are possible thanks to our collaborative community model.</p></div>
-    <div class="why-card"><div class="why-icon">🎪</div><h3>Regular Events</h3><p>Field trips, family-friendly events throughout the year, and an active Board of Directors keeping the school thriving.</p></div>
+    <div class="why-card"><div class="why-icon">📅</div><h3>Regular Events</h3><p>Family-friendly events throughout the year, and an active Board of Directors keeping the school thriving.</p></div>
   </div>
 </section>
 
@@ -406,9 +419,12 @@
   </div>
 </section>
 
-<!-- FB STRIP -->
+<!-- SOCIAL STRIP -->
 <div class="fb-strip">
-  📘 Follow us for updates, photos and events — <a href="https://www.facebook.com/rockwoodnurseryschool" target="_blank">facebook.com/rockwoodnurseryschool</a>
+  📘 <a href="https://www.facebook.com/rockwoodnurseryschool" target="_blank">facebook.com/rockwoodnurseryschool</a>
+  &nbsp;&nbsp;|&nbsp;&nbsp;
+  📸 <a href="https://www.instagram.com/rockwoodnurseryschool/" target="_blank">instagram.com/rockwoodnurseryschool</a>
+  &nbsp;&nbsp;— Follow us for updates, photos and events
 </div>
 
 <!-- FOOTER -->
@@ -421,6 +437,7 @@
     <a href="#teachers">Teachers</a>
     <a href="#contact">Contact</a>
     <a href="https://www.facebook.com/rockwoodnurseryschool" target="_blank">Facebook</a>
+    <a href="https://www.instagram.com/rockwoodnurseryschool/" target="_blank">Instagram</a>
     <a href="https://www.rockwoodnurseryschool.ca/parent-login" target="_blank">Parent Login</a>
   </div>
   <p class="footer-copy">© 2025 Rockwood Nursery School. Non-profit cooperative. All rights reserved.<br>191 Main St S., Rockwood, ON · 519-856-4486 · rockwoodnursery@gmail.com</p>

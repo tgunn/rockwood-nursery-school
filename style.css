@@ -299,9 +299,36 @@ h2 {
 .fb-strip { background: #1877F2; color: white; padding: 14px 60px; text-align: center; font-size: 0.88rem; font-weight: 600; }
 .fb-strip a { color: white; font-weight: 700; }
 
+/* ── SOCIAL STRIP ── */
+.social-strip {
+  background: #1a1a2e;
+  padding: 18px 60px;
+  display: flex; align-items: center; justify-content: center; gap: 32px;
+  flex-wrap: wrap;
+}
+.social-strip-text {
+  color: rgba(255,255,255,0.7); font-size: 0.85rem; font-weight: 600;
+}
+.social-strip-links { display: flex; gap: 16px; align-items: center; }
+.social-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 18px; border-radius: 50px;
+  font-size: 0.85rem; font-weight: 700; text-decoration: none;
+  transition: transform 0.2s, opacity 0.2s;
+  color: white;
+}
+.social-link:hover { transform: translateY(-2px); opacity: 0.9; }
+.fb-link { background: #1877F2; }
+.ig-link { background: linear-gradient(45deg, #f9ce34, #ee2a7b, #6228d7); }
+
+@media (max-width: 900px) {
+  .social-strip { padding: 18px 24px; gap: 16px; }
+}
+
 /* ── FOOTER ── */
 footer { background: var(--text); color: rgba(255,255,255,0.7); padding: 40px 60px; text-align: center; }
-.footer-logo { font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: var(--amber-light); margin-bottom: 6px; }
+.footer-logo { font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: var(--amber-light); margin-bottom: 6px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.footer-logo span { font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: var(--amber-light); }
 .footer-tagline { font-size: 0.85rem; margin-bottom: 20px; }
 .footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
 .footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.82rem; font-weight: 600; transition: color 0.2s; }

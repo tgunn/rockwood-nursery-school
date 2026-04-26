@@ -3,17 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rockwood Nursery School — Where Little Ones Begin to Bloom</title>
+<title>Rockwood Nursery School — We're About the Little People</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+  /* Program card images */
+  .program-img {
+    width: calc(100% + 56px);
+    margin: -28px -28px 20px -28px;
+    height: 160px;
+    overflow: hidden;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .program-img img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center;
+    transition: transform 0.4s;
+  }
+  .program-card:hover .program-img img { transform: scale(1.04); }
+
+  /* School exterior section */
+  .exterior-section {
+    background: var(--green);
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 420px;
+    overflow: hidden;
+  }
+  .exterior-img {
+    overflow: hidden;
+  }
+  .exterior-img img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center top;
+    display: block;
+  }
+  .exterior-content {
+    padding: 60px 50px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .exterior-content .section-label { color: var(--amber-light); }
+  .exterior-content .section-label::before { background: var(--amber-light); }
+  .exterior-content h2 { color: white; margin-bottom: 16px; }
+  .exterior-content p { color: rgba(255,255,255,0.85); font-size: 1rem; line-height: 1.7; margin-bottom: 14px; }
+  .exterior-content a { color: var(--amber-light); font-weight: 700; }
+
+  /* CWELCC callout */
+  .cwelcc-box {
+    background: rgba(255,255,255,0.12); border-radius: 14px;
+    padding: 18px 22px; margin-top: 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .cwelcc-box h4 { font-size: 0.85rem; font-weight: 700; color: var(--amber-light); margin-bottom: 6px; }
+  .cwelcc-box p { font-size: 0.82rem; color: rgba(255,255,255,0.8); line-height: 1.55; margin: 0; }
+  .cwelcc-box a { color: var(--amber-light); }
+
+  @media (max-width: 900px) {
+    .exterior-section { grid-template-columns: 1fr; }
+    .exterior-img { height: 280px; }
+    .exterior-content { padding: 40px 24px; }
+    .program-img { width: calc(100% + 48px); margin: -28px -24px 20px -24px; }
+  }
+</style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav id="navbar">
   <a href="#" class="nav-logo">
-    <img src="images/logo.webp" alt="RNS Logo">
+    <img src="images/logo.jpg" alt="RNS Logo">
     <div class="nav-logo-text">Rockwood Nursery School<span>Rockwood, Ontario</span></div>
   </a>
   <ul class="nav-links">
@@ -40,7 +100,7 @@
 <section class="hero" id="home">
   <div class="hero-content">
     <div class="hero-badge">🎉 Celebrating 50+ Years of Learning</div>
-    <h1>Where Little Ones Begin to <em>Bloom</em></h1>
+    <h1>We're About the <em>Little People</em></h1>
     <p class="hero-sub">A warm, nurturing nursery school in Rockwood, Ontario serving toddlers and preschoolers aged 18 months to 4 years. A community-led, non-profit cooperative you can trust.</p>
     <div class="hero-btns">
       <a href="#programs" class="btn-primary">View Programs & Pricing</a>
@@ -107,20 +167,27 @@
 <section id="programs">
   <div class="section-label">Programs & Pricing</div>
   <h2>Find the Right Program for Your Child</h2>
-  <p class="section-sub">Affordable monthly fees thanks to our cooperative model. All programs are led by two certified ECE teachers.</p>
+  <p class="section-sub">Affordable monthly fees thanks to our cooperative model. All programs are led by qualified ECE teachers.</p>
   <div class="programs-grid">
+
     <div class="program-card">
+      <div class="program-img">
+        <img src="images/kids-1.jpg" alt="Morning program children">
+      </div>
       <div class="program-label">Group A</div>
       <div class="program-name">Morning Program</div>
       <div class="program-price">$144 <small>/ month</small></div>
       <div class="program-detail">📅 Mon, Wed & Fri</div>
       <div class="program-detail">🕘 9:00 am – 11:30 am</div>
       <div class="program-detail">👶 Turning 3 in enrollment year</div>
-      <div class="program-detail">👩‍🏫 Two certified ECE teachers</div>
       <div class="program-spacer"></div>
       <a href="mailto:rockwoodnursery@gmail.com?subject=Group A Registration Inquiry" class="btn-primary">Register for Group A</a>
     </div>
+
     <div class="program-card">
+      <div class="program-img">
+        <img src="images/kids-2.jpg" alt="Toddler program children">
+      </div>
       <div class="program-label">Group B</div>
       <div class="program-name">Toddler Program</div>
       <div class="program-price">$96 <small>/ month</small></div>
@@ -131,34 +198,58 @@
       <div class="program-spacer"></div>
       <a href="mailto:rockwoodnursery@gmail.com?subject=Group B Registration Inquiry" class="btn-primary">Register for Group B</a>
     </div>
+
     <div class="program-card">
+      <div class="program-img">
+        <img src="images/kids-3.jpg" alt="Afternoon program children">
+      </div>
       <div class="program-label">Group C</div>
       <div class="program-name">Afternoon Program</div>
       <div class="program-price">$96 <small>/ month</small></div>
       <div class="program-detail">📅 Tues & Thurs</div>
       <div class="program-detail">🕑 12:30 pm – 3:00 pm</div>
       <div class="program-detail">👶 Turning 3 in enrollment year</div>
-      <div class="program-detail">👩‍🏫 Two certified ECE teachers</div>
       <div class="program-spacer"></div>
       <a href="mailto:rockwoodnursery@gmail.com?subject=Group C Registration Inquiry" class="btn-primary">Register for Group C</a>
     </div>
+
     <div class="program-card">
+      <div class="program-img">
+        <img src="images/kids-4.jpg" alt="Afternoon program children">
+      </div>
       <div class="program-label">Group D</div>
       <div class="program-name">Afternoon Program</div>
       <div class="program-price">$96 <small>/ month</small></div>
       <div class="program-detail">📅 Mon & Wed</div>
       <div class="program-detail">🕑 12:30 pm – 3:00 pm</div>
       <div class="program-detail">👶 Turning 3 in enrollment year</div>
-      <div class="program-detail">👩‍🏫 Two certified ECE teachers</div>
       <div class="program-spacer"></div>
       <a href="mailto:rockwoodnursery@gmail.com?subject=Group D Registration Inquiry" class="btn-primary">Register for Group D</a>
     </div>
+
   </div>
   <div class="programs-note">
     <span>📋</span>
     <span><strong>Questions about registration?</strong> Contact Ashley Cypcarz at <a href="tel:6473933896" style="color:var(--green)">647-393-3896</a> or email <a href="mailto:rockwoodnursery@gmail.com" style="color:var(--green)">rockwoodnursery@gmail.com</a></span>
   </div>
 </section>
+
+<!-- SCHOOL EXTERIOR + AFFORDABLE / CWELCC -->
+<div class="exterior-section">
+  <div class="exterior-img">
+    <img src="images/school-exterior.png" alt="Rockwood Town Hall — home of Rockwood Nursery School">
+  </div>
+  <div class="exterior-content">
+    <div class="section-label">Our Home</div>
+    <h2>A Community Space Since 1870</h2>
+    <p>Rockwood Nursery School has called the historic Rockwood Town Hall home for over 50 years. It's a bright, spacious, welcoming space — right in the heart of the community at 191 Main St S.</p>
+    <p>As a parent-led, non-profit cooperative, we keep our fees among the most affordable in the region. Parents play an active role through duty days and the Board of Directors, which is what makes our low monthly fees possible.</p>
+    <div class="cwelcc-box">
+      <h4>💰 CWELCC — Canada-Wide Early Learning & Child Care</h4>
+      <p>Rockwood Nursery School is a proud participant in the <a href="http://www.ontario.ca/page/canada-ontario-early-years-and-child-care-agreement" target="_blank">Canada-Wide Early Learning and Child Care (CWELCC) Program</a>, a federal-provincial initiative working toward $10/day child care across Canada. This means even greater savings for eligible families enrolled in our programs.</p>
+    </div>
+  </div>
+</div>
 
 <!-- TEACHERS -->
 <section id="teachers">
@@ -172,7 +263,7 @@
         <div class="teacher-role">Registered ECE</div>
         <div class="teacher-name">Nicki Barens</div>
         <div class="teacher-years">35+ Years at RNS</div>
-        <div class="teacher-bio">A beloved community figure known for boundless patience and warmth. Skating enthusiast, master knitter, pickle ball player, and grandmother extraordinaire.</div>
+        <div class="teacher-bio">A beloved community figure known for her boundless patience and warmth, Nicki has shaped the lives of generations of Rockwood children. Outside the classroom she's a skating enthusiast, master knitter, dedicated pickleball player, and proud grandmother.</div>
       </div>
     </div>
     <div class="teacher-card">
@@ -181,7 +272,7 @@
         <div class="teacher-role">Registered ECE</div>
         <div class="teacher-name">Victoria Caulfeild</div>
         <div class="teacher-years">15+ Years at RNS</div>
-        <div class="teacher-bio">Meticulously organized and always smiling, Victoria creates opportunities for every child to flourish. Hiker, cyclist, kayaker, and yoga enthusiast.</div>
+        <div class="teacher-bio">Meticulously organized and always smiling, Victoria has a gift for creating opportunities where every child can flourish at their own pace. When she's not in the classroom, you'll find her hiking, cycling, kayaking, or on a yoga mat.</div>
       </div>
     </div>
     <div class="teacher-card">
@@ -190,7 +281,7 @@
         <div class="teacher-role">Teacher</div>
         <div class="teacher-name">Krista Denny</div>
         <div class="teacher-years">4 Years at RNS</div>
-        <div class="teacher-bio">Always ready to play trucks or host a tea party, Krista brings contagious enthusiasm and a love of coaching skating to the classroom every day.</div>
+        <div class="teacher-bio">Energetic and endlessly enthusiastic, Krista brings a joyful spirit to everything she does — whether that's building block towers, hosting an elaborate tea party, or cheering kids on the ice as a skating coach. Her passion for play is absolutely contagious.</div>
       </div>
     </div>
     <div class="teacher-card">
@@ -199,7 +290,7 @@
         <div class="teacher-role">Registered ECE</div>
         <div class="teacher-name">Ashley Cypcarz</div>
         <div class="teacher-years">Newest Team Member</div>
-        <div class="teacher-bio">Committed to inclusive, welcoming environments where every child feels valued. Loves crafting, scrapbooking, dancing, and quality time with her children.</div>
+        <div class="teacher-bio">Committed to building inclusive, welcoming spaces where every child feels seen and valued, Ashley brings warmth and creativity to the classroom every day. Outside of school she loves crafting, scrapbooking, dancing, and spending quality time with her own children.</div>
       </div>
     </div>
   </div>
@@ -302,7 +393,7 @@
     </div>
     <div class="contact-map-block">
       <div class="map-image">
-        <img src="images/classroom.jpg" alt="Rockwood Town Hall">
+        <img src="images/school-exterior.png" alt="Rockwood Town Hall">
       </div>
       <div class="map-info">
         <h3>📍 Town Hall, Rockwood</h3>
@@ -321,7 +412,7 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">🌿 Rockwood Nursery School</div>
-  <p class="footer-tagline">Where little ones begin to bloom — since 1970s</p>
+  <p class="footer-tagline">About the Little People Since 1970</p>
   <div class="footer-links">
     <a href="#philosophy">Philosophy</a>
     <a href="#programs">Programs</a>

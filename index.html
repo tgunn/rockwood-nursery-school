@@ -24,7 +24,7 @@
   .program-img {
     width: calc(100% + 56px);
     margin: -28px -28px 20px -28px;
-    height: 160px;
+    height: 190px;
     overflow: hidden;
     border-radius: var(--radius) var(--radius) 0 0;
   }
@@ -33,6 +33,7 @@
     object-fit: cover; object-position: center;
     transition: transform 0.4s;
   }
+  .program-img img.crop-top { object-position: center top; }
   .program-card:hover .program-img img { transform: scale(1.04); }
 
   /* School exterior section */
@@ -93,7 +94,7 @@
     <li><a href="#programs">Programs</a></li>
     <li><a href="#teachers">Teachers</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="https://www.rockwoodnurseryschool.ca/parent-login" target="_blank">Parent Login</a></li>
+    <li><a href="parent-portal/index.html" target="_blank">Parent Login</a></li>
   </ul>
   <a href="https://www.rockwoodnurseryschool.ca/s/RNS-Registration-Form-2026_2027-2jtw.pdf" class="nav-cta">Register Now</a>
   <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()">
@@ -107,7 +108,7 @@
   <a href="#teachers" onclick="closeMenu()">Teachers</a>
   <a href="#contact" onclick="closeMenu()">Contact</a>
   <a href="https://www.rockwoodnurseryschool.ca/s/RNS-Registration-Form-2026_2027-2jtw.pdf" class="mobile-register" onclick="closeMenu()">Register Now</a>
-  <a href="https://www.rockwoodnurseryschool.ca/parent-login" onclick="closeMenu()">Parent Login</a>
+  <a href="parent-portal/index.html" onclick="closeMenu()">Parent Login</a>
 </div>
 
 <!-- HERO -->
@@ -123,13 +124,13 @@
   </div>
   <div class="hero-right">
     <div class="hero-img tall">
-      <img src="images/classroom.jpg" alt="Rockwood Nursery School classroom">
+      <img src="images/gallery-largeroom.jpg" alt="Our bright, spacious classroom">
     </div>
     <div class="hero-img">
-      <img src="images/kids-1.jpg" alt="Children learning">
+      <img src="images/gallery-castle.jpg" alt="Children playing with castle">
     </div>
     <div class="hero-img">
-      <img src="images/kids-2.jpg" alt="Children playing">
+      <img src="images/gallery-pompoms.jpg" alt="Colourful sensory play materials">
     </div>
     <div class="hero-stat-bubble">
       <strong>18mo+</strong>
@@ -199,7 +200,7 @@
 
     <div class="program-card">
       <div class="program-img">
-        <img src="images/kids-2.jpg" alt="Toddler program children">
+        <img src="images/gallery-dressup.jpg" alt="Dress-up play area" style="object-position: center 30%;">
       </div>
       <div class="program-label">Group B</div>
       <div class="program-name">Toddler Program</div>
@@ -214,7 +215,7 @@
 
     <div class="program-card">
       <div class="program-img">
-        <img src="images/kids-3.jpg" alt="Afternoon program children">
+        <img src="images/gallery-traintable.jpg" alt="Train table play area">
       </div>
       <div class="program-label">Group C</div>
       <div class="program-name">Afternoon Program</div>
@@ -228,7 +229,7 @@
 
     <div class="program-card">
       <div class="program-img">
-        <img src="images/kids-4.jpg" alt="Afternoon program children">
+        <img src="images/gallery-pompoms.jpg" alt="Colourful sensory play materials">
       </div>
       <div class="program-label">Group D</div>
       <div class="program-name">Afternoon Program</div>
@@ -250,7 +251,7 @@
 <!-- SCHOOL EXTERIOR + AFFORDABLE / CWELCC -->
 <div class="exterior-section">
   <div class="exterior-img">
-    <img src="images/school-exterior.png" alt="Rockwood Town Hall — home of Rockwood Nursery School">
+    <img src="images/school-exterior.jpg" alt="Rockwood Town Hall — home of Rockwood Nursery School">
   </div>
   <div class="exterior-content">
     <div class="section-label">Our Home</div>
@@ -339,19 +340,19 @@
   <p class="section-sub">Real moments from our bright, welcoming space where children learn and play every day.</p>
   <div class="gallery-grid">
     <div class="gal-item tall">
-      <img src="images/kids-4.jpg" alt="Children at Rockwood Nursery School">
+      <img src="images/gallery-traintable.jpg" alt="Train table play area">
     </div>
     <div class="gal-item">
-      <img src="images/fieldtrip.jpg" alt="Field trip">
+      <img src="images/gallery-reading.jpg" alt="Reading centre with cozy book nook">
+    </div>
+    <div class="gal-item gal-item--large">
+      <img src="images/gallery-largeroom.jpg" alt="Our bright, spacious classroom">
     </div>
     <div class="gal-item">
-      <img src="images/kids-3.jpg" alt="Classroom activity">
+      <img src="images/gallery-campfire.jpg" alt="Campfire carpet play area with trucks and castle">
     </div>
     <div class="gal-item">
-      <img src="images/kids-2.jpg" alt="Learning and play">
-    </div>
-    <div class="gal-item">
-      <img src="images/kids-1.jpg" alt="Children exploring">
+      <img src="images/gallery-cubbies.jpg" alt="Personalised cubbies for every child">
     </div>
   </div>
 </section>
@@ -409,7 +410,7 @@
     </div>
     <div class="contact-map-block">
       <div class="map-image">
-        <img src="images/school-exterior.png" alt="Rockwood Town Hall" style="object-position: center 38%;">
+        <img src="images/school-exterior.jpg" alt="Rockwood Town Hall" style="object-position: center 38%;">
       </div>
       <div class="map-info">
         <h3>📍 Town Hall, Rockwood</h3>
@@ -446,7 +447,7 @@
     <a href="#contact">Contact</a>
     <a href="https://www.facebook.com/rockwoodnurseryschool" target="_blank">Facebook</a>
     <a href="https://www.instagram.com/rockwoodnurseryschool/" target="_blank">Instagram</a>
-    <a href="https://www.rockwoodnurseryschool.ca/parent-login" target="_blank">Parent Login</a>
+    <a href="parent-portal/index.html" target="_blank">Parent Login</a>
   </div>
   <p class="footer-copy">© 2025 Rockwood Nursery School. Non-profit co-operative. All rights reserved.<br>191 Main St S., Rockwood, ON · 519-856-4486 · rockwoodnursery@gmail.com</p>
 </footer>

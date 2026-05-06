@@ -250,7 +250,7 @@ h2 {
 #gallery { background: white; }
 .gallery-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 1.5fr 1fr 1fr;
   grid-template-rows: 220px 220px;
   gap: 12px;
 }
@@ -258,6 +258,7 @@ h2 {
 .gal-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
 .gal-item:hover img { transform: scale(1.04); }
 .gal-item.tall { grid-row: span 2; }
+.gal-item--large { grid-column: span 2; }
 
 /* ── TESTIMONIALS ── */
 #testimonials { background: var(--green); }
@@ -362,5 +363,6 @@ footer { background: var(--text); color: rgba(255,255,255,0.7); padding: 40px 60
   .testimonials-grid { grid-template-columns: 1fr; }
   .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
   .gal-item.tall { grid-row: span 1; }
+  .gal-item--large { grid-column: span 2; }
   .fb-strip, footer { padding-left: 24px; padding-right: 24px; }
 }

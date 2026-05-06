@@ -355,7 +355,15 @@ footer { background: var(--text); color: rgba(255,255,255,0.7); padding: 40px 60
   .hero h1 { font-size: 2.6rem; }
   .hero-right { height: 300px; }
   .hero-floats { display: none; }
-  .stats-bar { padding: 20px 24px; }
+  .stats-bar {
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 0;
+    justify-items: center;
+  }
+  .stat-div { display: none; }
+  .stat-item { width: 100%; text-align: center; }
   .phil-layout { grid-template-columns: 1fr; }
   .phil-image { display: none; }
   .phil-grid { grid-template-columns: 1fr 1fr; }

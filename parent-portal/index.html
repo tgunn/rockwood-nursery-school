@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parent Portal | Rockwood Nursery School</title>
+<meta name="description" content="Rockwood Nursery School secure parent portal. Access school calendars, parent handbook, and committee information.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://rockwoodnurseryschool.ca/parent-portal/">
 <title>Parent Portal — Rockwood Nursery School</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -308,7 +313,6 @@
     transition: transform 0.2s, box-shadow 0.2s;
   }
   .doc-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-  .doc-card:nth-child(2) { border-color: var(--amber); }
   .doc-icon {
     width: 52px; height: 52px;
     background: var(--green-pale);
@@ -316,7 +320,6 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 1.6rem;
   }
-  .doc-card:nth-child(2) .doc-icon { background: rgba(232,160,32,0.12); }
   .doc-info h3 {
     font-family: 'Fredoka One', cursive;
     color: var(--green); font-size: 1.1rem; margin-bottom: 4px;
@@ -661,28 +664,6 @@
         </div>
       </div>
 
-      <!-- Committee Duty List -->
-      <div class="doc-card">
-        <div class="doc-icon">📋</div>
-        <div class="doc-info">
-          <h3>Committee Duty List</h3>
-          <p>Volunteer committee assignments and responsibilities for the current school year. Thank you for contributing to our school community!</p>
-        </div>
-        <div class="doc-actions">
-          <!--
-            ╔══════════════════════════════════════════════════╗
-            ║  TO LINK COMMITTEE LIST PDF:                     ║
-            ║  1. Add PDF to the /parent-portal/ folder        ║
-            ║  2. Replace COMMITTEE_LIST_FILENAME.pdf below    ║
-            ╚══════════════════════════════════════════════════╝
-          -->
-          <a href="COMMITTEE_LIST_FILENAME.pdf" target="_blank" class="doc-btn doc-btn-primary">📋 View PDF</a>
-          <a href="COMMITTEE_LIST_FILENAME.pdf" download class="doc-btn doc-btn-secondary">⬇ Download</a>
-        </div>
-        <div class="doc-placeholder-note">
-          📌 Upload your PDF and replace <code>COMMITTEE_LIST_FILENAME.pdf</code> in the HTML
-        </div>
-      </div>
 
     </div>
     <!-- COMMITTEES -->
@@ -770,6 +751,7 @@
 
   function logout() {
     sessionStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem('rns_committees');
     document.getElementById('portal-screen').style.display = 'none';
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('password-input').value = '';
@@ -929,6 +911,22 @@
     const loading = document.getElementById('committees-loading');
     const error = document.getElementById('committees-error');
 
+    // Always hide error on entry - it should never show if we have cached or live data
+    error.style.display = 'none';
+
+    // Check sessionStorage cache first - survives refresh without re-fetching
+    const cached = sessionStorage.getItem('rns_committees');
+    if (cached) {
+      try {
+        const committees = JSON.parse(cached);
+        loading.style.display = 'none';
+        renderCommittees(committees, grid);
+        return;
+      } catch (e) {
+        sessionStorage.removeItem('rns_committees');
+      }
+    }
+
     try {
       const committees = [];
       let anySucceeded = false;
@@ -941,7 +939,7 @@
           const response = await fetch(url);
           const text = await response.text();
 
-          // Google returns an error page (html) if not public — check for CSV content
+          // Google returns an HTML error page if not public
           if (!response.ok || text.includes('<html') || text.includes('google-signin')) {
             throw new Error('Sheet not public or accessible');
           }
@@ -955,7 +953,7 @@
           console.warn('Could not load tab: ' + COMMITTEE_TABS[i], tabErr);
           committees.push({
             name: COMMITTEE_TABS[i] + ' Committee',
-            description: 'Details coming soon — committee data will appear once the Google Sheet is publicly shared.',
+            description: 'Details coming soon.',
             members: [],
             icon: COMMITTEE_ICONS[i],
           });
@@ -964,41 +962,44 @@
 
       loading.style.display = 'none';
 
-      // Always show cards — either with real data or placeholder text
-      grid.innerHTML = committees.map((c, idx) => `
-        <div class="committee-card">
-          <div class="committee-card-header">
-            <div class="com-icon">${c.icon}</div>
-            <h3>${c.name}</h3>
-          </div>
-          <div class="committee-card-body">
-            <p class="committee-desc">${c.description}</p>
-            ${c.members.length > 0 ? `
-              <div class="committee-members-label">Committee Members</div>
-              ${c.members.map(m => `
-                <div class="committee-member">
-                  <div class="member-dot"></div>
-                  <span>${m}</span>
-                </div>
-              `).join('')}
-            ` : ''}
-          </div>
-        </div>
-      `).join('');
-
-      // Show a subtle notice if data couldn't be loaded
-      if (!anySucceeded) {
-        const notice = document.createElement('div');
-        notice.style.cssText = 'grid-column:1/-1;text-align:center;padding:12px;font-size:0.8rem;color:var(--text-light);background:var(--cream);border-radius:10px;margin-top:8px;';
-        notice.innerHTML = '⚠️ Live committee data unavailable. Ensure the Google Sheet is shared as <strong>"Anyone with the link → Viewer"</strong>.';
-        grid.appendChild(notice);
+      // Cache in sessionStorage so refresh doesn't lose data
+      if (anySucceeded) {
+        sessionStorage.setItem('rns_committees', JSON.stringify(committees));
       }
+
+      renderCommittees(committees, grid);
 
     } catch (err) {
       console.error('Error loading committees:', err);
       loading.style.display = 'none';
-      error.style.display = 'block';
+      // Only show error if we have absolutely nothing to show
+      if (!grid.innerHTML) {
+        error.style.display = 'block';
+      }
     }
+  }
+
+  function renderCommittees(committees, grid) {
+    grid.innerHTML = committees.map((c) => `
+      <div class="committee-card">
+        <div class="committee-card-header">
+          <div class="com-icon">${c.icon}</div>
+          <h3>${c.name}</h3>
+        </div>
+        <div class="committee-card-body">
+          <p class="committee-desc">${c.description}</p>
+          ${c.members.length > 0 ? `
+            <div class="committee-members-label">Committee Members</div>
+            ${c.members.map(m => `
+              <div class="committee-member">
+                <div class="member-dot"></div>
+                <span>${m}</span>
+              </div>
+            `).join('')}
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
   }
 
   function parseCommitteeCSV(csv) {

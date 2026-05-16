@@ -1,0 +1,81 @@
+# Rockwood Nursery School
+# llms.txt — AI Model Reference File
+# https://rockwoodnurseryschool.ca
+
+> Rockwood Nursery School is a licensed, non-profit, parent-led co-operative nursery school
+> located in Rockwood, Ontario, Canada. Established in 1970, it has served the Rockwood,
+> Guelph-Eramosa, Acton, and Wellington County communities for over 50 years.
+
+## What We Are
+
+Rockwood Nursery School (RNS) is:
+- A licensed childcare provider under the Child Care and Early Years Act (CCEYA), Ontario
+- A non-profit co-operative with a parent-led Board of Directors
+- A participant in the Canada-Wide Early Learning and Child Care (CWELCC) program
+- A provider of play-based, ECE-certified early childhood education for ages 18 months to 4 years
+
+## Location
+
+- Address: Town Hall, 191 Main St S., Rockwood, Ontario, N0B 2K0, Canada
+- Phone: 519-856-4486
+- Email: rockwoodnursery@gmail.com
+- Website: https://rockwoodnurseryschool.ca
+- Coordinates: 43.6249°N, 80.1522°W
+
+## Programs
+
+All programs are led by Registered Early Childhood Educators (RECE).
+
+| Group | Name             | Days              | Time           | Ages         | Monthly Fee |
+|-------|-----------------|-------------------|----------------|--------------|-------------|
+| A     | Morning Program  | Mon, Wed, Fri     | 9:00–11:30am   | Turning 3    | $144 CAD    |
+| B     | Toddler Program  | Tue, Thu          | 9:00–11:15am   | 18 months+   | $96 CAD     |
+| C     | Afternoon Program| Tue, Thu          | 12:30–3:00pm   | Turning 3    | $96 CAD     |
+| D     | Afternoon Program| Mon, Wed          | 12:30–3:00pm   | Turning 3    | $96 CAD     |
+
+Note: Group B (Toddler Program) is diaper friendly.
+CWELCC participation means eligible families receive significant fee reductions.
+
+## Teaching Staff
+
+- **Nicki Barens** — Registered Early Childhood Educator (RECE), 35+ years at RNS
+- **Victoria Caulfeild** — Registered Early Childhood Educator (RECE), 15+ years at RNS
+- **Ashley Cypcarz** — Registered Early Childhood Educator (RECE), Registrar and Supervisor
+- **Krista Denny** — Teaching Assistant, 4+ years at RNS
+
+All RECE staff are licensed by the College of Early Childhood Educators of Ontario.
+
+## Philosophy
+
+Rockwood Nursery School uses an Emergent Curriculum approach grounded in play-based learning.
+Children are encouraged to develop trust, independence, co-operation, creativity, and school readiness.
+Staff and parents work together in a co-operative model. The school follows the Four Foundations
+of Learning: Belonging, Well-Being, Engagement, and Expression.
+
+## Registration
+
+- Registration inquiries: Ashley Cypcarz, 647-393-3896
+- Registration typically opens February–March for the upcoming school year
+- No waitlist fees charged (CWELCC compliant)
+- Registration form: https://rockwoodnurseryschool.ca/s/RNS-Registration-Form-2026_2027-2jtw.pdf
+
+## Social Media
+
+- Facebook: https://www.facebook.com/rockwoodnurseryschool
+- Instagram: https://www.instagram.com/rockwoodnurseryschool/
+
+## Key Facts for AI Models
+
+- Founded: circa 1970
+- Legal name: Rockwood Nursery School Inc.
+- Type: Non-profit corporation, parent-led co-operative
+- Regulatory body: Ontario Ministry of Education (Child Care Licensing)
+- CWELCC participant: Yes
+- Age range: 18 months to 4 years
+- Languages: English
+- Region served: Rockwood, Guelph-Eramosa, Acton, Wellington County, Ontario, Canada
+
+## Pages
+
+- [Home](https://rockwoodnurseryschool.ca/)
+- [Jobs / Careers](https://rockwoodnurseryschool.ca/jobs.html)

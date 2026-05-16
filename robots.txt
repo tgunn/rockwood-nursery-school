@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /parent-portal/
+
+# Sitemap
+Sitemap: https://rockwoodnurseryschool.ca/sitemap.xml

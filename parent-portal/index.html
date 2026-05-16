@@ -577,7 +577,7 @@
         <div class="calendar-card-header">
           <span>🧹</span>
           <h3>Cleaning Calendar</h3>
-          <button class="cal-pdf-btn" onclick="exportCalendarPDF('cleaning', 'Cleaning Calendar')">📄 Export PDF</button>
+          <button class="cal-pdf-btn" onclick="exportCalendarPDF('cleaning', 'Cleaning Calendar')" data-type="cleaning">📄 Export PDF</button>
         </div>
         <!--
           ╔══════════════════════════════════════════════════╗
@@ -607,7 +607,7 @@
         <div class="calendar-card-header">
           <span>📆</span>
           <h3>Monthly Calendar</h3>
-          <button class="cal-pdf-btn" onclick="exportCalendarPDF('monthly', 'Monthly Calendar')">📄 Export PDF</button>
+          <button class="cal-pdf-btn" onclick="exportCalendarPDF('monthly', 'Monthly Calendar')" data-type="monthly">📄 Export PDF</button>
         </div>
         <!--
           ╔══════════════════════════════════════════════════╗
@@ -771,125 +771,238 @@
   // PDF EXPORT — branded calendar PDF
   // Uses the browser's print-to-PDF with a styled overlay
   // ─────────────────────────────────────────────────
-  function exportCalendarPDF(calType, calTitle) {
-    const iframe = document.getElementById(calType + '-calendar-iframe');
-    const now = new Date();
+  // ─────────────────────────────────────────────────
+  // CALENDAR PDF EXPORT
+  // Fetches real events via Google Calendar public JSON feed
+  // Renders a full branded monthly calendar grid
+  // ─────────────────────────────────────────────────
+  const CALENDAR_IDS = {
+    cleaning: '3cc581792ac4745c6ef7a857b215b5fb42aeeefed895c0a9074f220056d23334@group.calendar.google.com',
+    monthly:  'adb2e08688202f0f028f6e50e1ad113e04b748e4cd25dc85c835b8f12f696e49@group.calendar.google.com',
+  };
+
+  async function exportCalendarPDF(calType, calTitle) {
+    const btn = document.querySelector(`[data-type="${calType}"]`);
+    const origText = btn.innerHTML;
+    btn.innerHTML = '⏳ Loading…';
+    btn.disabled = true;
+
+    try {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth(); // 0-indexed
+
+      // Fetch events for current month
+      const events = await fetchCalendarEvents(CALENDAR_IDS[calType], year, month);
+      renderCalendarPDF(calTitle, calType, year, month, events);
+    } catch (err) {
+      console.error('PDF export error:', err);
+      alert('Could not load calendar events. Please ensure the calendar is set to public in Google Calendar settings.');
+    } finally {
+      btn.innerHTML = origText;
+      btn.disabled = false;
+    }
+  }
+
+  async function fetchCalendarEvents(calId, year, month) {
+    const timeMin = new Date(year, month, 1).toISOString();
+    const timeMax = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
+    const encodedId = encodeURIComponent(calId);
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodedId}/events?key=AIzaSyD-placeholder&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime`;
+
+    // Try Google Calendar JSON feed (no API key needed for public calendars)
+    const feedUrl = `https://calendar.google.com/calendar/feeds/${encodedId}/public/full?alt=json&start-min=${timeMin}&start-max=${timeMax}&max-results=100`;
+
+    try {
+      const resp = await fetch(feedUrl);
+      if (!resp.ok) throw new Error('Feed not accessible');
+      const data = await resp.json();
+      const entries = data.feed?.entry || [];
+
+      return entries.map(e => {
+        const startRaw = e['gd$when']?.[0]?.['$t'] || e['published']?.['$t'] || '';
+        const endRaw   = e['gd$when']?.[0]?.['endTime'] || startRaw;
+        const title    = e['title']?.['$t'] || 'Event';
+
+        // Parse date — handle both date-only (YYYY-MM-DD) and datetime formats
+        const startDate = new Date(startRaw);
+        const endDate   = new Date(endRaw);
+        const isAllDay  = startRaw.length === 10; // date-only string
+
+        return {
+          title,
+          start: startDate,
+          end: endDate,
+          isAllDay,
+          description: e['content']?.['$t'] || '',
+        };
+      }).filter(e => !isNaN(e.start));
+
+    } catch (err) {
+      console.warn('Google feed failed, returning empty events:', err);
+      return [];
+    }
+  }
+
+  function renderCalendarPDF(calTitle, calType, year, month, events) {
     const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    const monthYear = monthNames[now.getMonth()] + ' ' + now.getFullYear();
+    const monthName  = monthNames[month];
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay   = new Date(year, month, 1).getDay(); // 0=Sun
+    const today      = new Date();
 
-    const printWin = window.open('', '_blank');
-    printWin.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>${calTitle} - ${monthYear}</title>
-        <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-        <style>
-          @page { size: landscape; margin: 0.5in; }
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: 'Nunito', sans-serif; background: white; }
+    // Colour palette per calendar type
+    const colours = {
+      cleaning: { header: '#2d5a3d', event: '#e8f2eb', eventText: '#2d5a3d', eventBorder: '#2d5a3d', dot: '#2d5a3d' },
+      monthly:  { header: '#2d5a3d', event: '#fff3cd', eventText: '#7a5500', eventBorder: '#e8a020', dot: '#e8a020' },
+    };
+    const c = colours[calType] || colours.monthly;
 
-          .pdf-header {
-            background: #2d5a3d;
-            padding: 20px 28px;
-            border-radius: 12px 12px 0 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-          }
-          .pdf-header-left { display: flex; align-items: center; gap: 14px; }
-          .pdf-header h1 {
-            font-family: 'Fredoka One', cursive;
-            color: white; font-size: 22px; margin: 0;
-          }
-          .pdf-header .subtitle {
-            font-size: 12px;
-            color: rgba(255,255,255,0.7);
-            font-weight: 600;
-          }
-          .pdf-header-right {
-            text-align: right;
-          }
-          .pdf-month {
-            font-family: 'Fredoka One', cursive;
-            color: #f5c842;
-            font-size: 18px;
-          }
-          .pdf-school {
-            font-size: 11px;
-            color: rgba(255,255,255,0.6);
-          }
+    // Map events to day numbers
+    const eventsByDay = {};
+    events.forEach(ev => {
+      const d = ev.start.getDate();
+      const m = ev.start.getMonth();
+      const y = ev.start.getFullYear();
+      if (y === year && m === month) {
+        if (!eventsByDay[d]) eventsByDay[d] = [];
+        eventsByDay[d].push(ev);
+      }
+    });
 
-          .amber-bar {
-            height: 4px;
-            background: #f5c842;
-          }
+    // Build calendar grid cells
+    let gridCells = '';
+    const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
 
-          .pdf-body {
-            border: 1px solid #e8f2eb;
-            border-top: none;
-            border-radius: 0 0 12px 12px;
-            padding: 20px;
-            min-height: 500px;
-          }
-          .pdf-body iframe {
-            width: 100%;
-            height: 500px;
-            border: none;
-          }
-          .pdf-note {
-            font-size: 10px;
-            color: #6b5e4a;
-            text-align: center;
-            margin-top: 12px;
-          }
+    for (let i = 0; i < totalCells; i++) {
+      const dayNum = i - firstDay + 1;
+      const isValid = dayNum >= 1 && dayNum <= daysInMonth;
+      const isToday = isValid && dayNum === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+      const dayEvents = isValid ? (eventsByDay[dayNum] || []) : [];
 
-          .pdf-footer {
-            margin-top: 16px;
-            border-top: 2px solid #f5c842;
-            padding-top: 10px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            color: #6b5e4a;
-          }
+      if (!isValid) {
+        gridCells += `<div class="day empty"></div>`;
+      } else {
+        const evHTML = dayEvents.map(ev =>
+          `<div class="event" style="background:${c.event};color:${c.eventText};border-left:3px solid ${c.eventBorder};">${ev.title}</div>`
+        ).join('');
 
-          @media print {
-            .no-print { display: none !important; }
-          }
-        </style>
-      </head>
-      <body>
-        <button class="no-print" onclick="window.print()" style="position:fixed;top:16px;right:16px;background:#2d5a3d;color:white;border:none;padding:10px 24px;border-radius:50px;font-family:Nunito,sans-serif;font-weight:700;cursor:pointer;z-index:99;font-size:14px;">
-          🖨 Print / Save as PDF
-        </button>
+        gridCells += `
+          <div class="day${isToday ? ' today' : ''}${dayEvents.length ? ' has-events' : ''}">
+            <div class="day-num${isToday ? ' today-num' : ''}">${dayNum}</div>
+            ${evHTML}
+          </div>`;
+      }
+    }
 
-        <div class="pdf-header">
-          <div class="pdf-header-left">
-            <div>
-              <h1>${calTitle}</h1>
-              <div class="subtitle">Rockwood Nursery School</div>
-            </div>
-          </div>
-          <div class="pdf-header-right">
-            <div class="pdf-month">${monthYear}</div>
-            <div class="pdf-school">rockwoodnurseryschool.ca</div>
-          </div>
-        </div>
-        <div class="amber-bar"></div>
-        <div class="pdf-body">
-          <iframe src="${iframe ? iframe.src : '#'}"></iframe>
-        </div>
+    // Event list below grid
+    const allEvents = Object.entries(eventsByDay)
+      .sort((a, b) => +a[0] - +b[0])
+      .flatMap(([day, evs]) => evs.map(ev => ({ day: +day, ...ev })));
 
-        <div class="pdf-footer">
-          <span>Rockwood Nursery School · 191 Main St S., Rockwood ON</span>
-          <span>Generated ${now.toLocaleDateString('en-CA')}</span>
-        </div>
+    const eventListHTML = allEvents.length > 0 ? `
+      <div class="event-list-title">📋 Event Details — ${monthName} ${year}</div>
+      <table class="event-list">
+        ${allEvents.map(ev => `
+          <tr>
+            <td class="el-date">${monthName.slice(0,3)} ${ev.day}</td>
+            <td class="el-title">${ev.title}</td>
+            <td class="el-desc">${ev.description ? ev.description.replace(/<[^>]+>/g,'').slice(0,120) : ''}</td>
+          </tr>
+        `).join('')}
+      </table>` : `<p class="no-events">No events found for ${monthName} ${year}.</p>`;
 
-        <p class="pdf-note no-print">Use your browser's "Print" → "Save as PDF" or click the button above.</p>
-      </body>
-      </html>
-    `);
+    const printWin = window.open('', '_blank', 'width=1100,height=800');
+    printWin.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<title>${calTitle} — ${monthName} ${year}</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: landscape; margin: 0.4in 0.5in; }
+  @media print { .no-print { display: none !important; } body { print-color-adjust: exact; -webkit-print-color-adjust: exact; } }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Nunito',sans-serif; background:white; color:#2c2416; font-size:11px; }
+
+  /* PRINT BUTTON */
+  .print-bar { background:#f8f4ee; border-bottom:2px solid #e8f2eb; padding:10px 20px; display:flex; align-items:center; justify-content:space-between; }
+  .print-bar span { font-size:12px; color:#6b5e4a; }
+  .print-btn { background:#2d5a3d; color:white; border:none; padding:8px 22px; border-radius:50px; font-family:'Nunito',sans-serif; font-weight:700; font-size:13px; cursor:pointer; }
+  .print-btn:hover { background:#4a8c5c; }
+
+  /* HEADER */
+  .header { background:${c.header}; padding:14px 22px; display:flex; align-items:center; justify-content:space-between; }
+  .header-left { display:flex; align-items:center; gap:12px; }
+  .header h1 { font-family:'Fredoka One',cursive; color:white; font-size:20px; margin:0; }
+  .header-sub { font-size:10px; color:rgba(255,255,255,0.65); font-weight:600; margin-top:2px; }
+  .header-right { text-align:right; }
+  .header-month { font-family:'Fredoka One',cursive; color:#f5c842; font-size:18px; }
+  .header-url { font-size:9px; color:rgba(255,255,255,0.5); margin-top:2px; }
+  .amber-bar { height:4px; background:#f5c842; }
+
+  /* CALENDAR GRID */
+  .cal-wrap { padding:12px 0 8px; }
+  .dow-row { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; margin-bottom:2px; }
+  .dow { text-align:center; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:#6b5e4a; padding:4px 0; }
+  .grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+  .day { background:#fafaf8; border:1px solid #eee; border-radius:5px; min-height:72px; padding:4px 5px; vertical-align:top; }
+  .day.empty { background:transparent; border-color:transparent; }
+  .day.today { background:#e8f2eb; border-color:#2d5a3d; }
+  .day.has-events { background:white; }
+  .day-num { font-size:11px; font-weight:700; color:#2c2416; margin-bottom:3px; line-height:1; }
+  .today-num { background:#2d5a3d; color:white; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; }
+  .event { font-size:8.5px; font-weight:600; padding:2px 4px; border-radius:3px; margin-bottom:2px; line-height:1.3; word-break:break-word; }
+
+  /* EVENT LIST */
+  .event-list-title { font-family:'Fredoka One',cursive; color:#2d5a3d; font-size:13px; margin:14px 0 6px; padding-top:10px; border-top:2px solid #f5c842; }
+  .event-list { width:100%; border-collapse:collapse; }
+  .event-list tr:nth-child(even) { background:#fafaf8; }
+  .el-date { width:60px; padding:4px 8px; font-weight:700; color:#2d5a3d; font-size:9px; white-space:nowrap; }
+  .el-title { padding:4px 8px; font-weight:700; font-size:9.5px; width:180px; }
+  .el-desc { padding:4px 8px; color:#6b5e4a; font-size:9px; }
+  .no-events { text-align:center; padding:20px; color:#6b5e4a; font-size:11px; }
+
+  /* FOOTER */
+  .footer { border-top:2px solid #f5c842; margin-top:10px; padding-top:7px; display:flex; justify-content:space-between; font-size:8.5px; color:#6b5e4a; }
+</style>
+</head>
+<body>
+
+<div class="print-bar no-print">
+  <span>Preview — <strong>${calTitle} · ${monthName} ${year}</strong> · Rockwood Nursery School</span>
+  <button class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
+</div>
+
+<div class="header">
+  <div class="header-left">
+    <div>
+      <h1>${calTitle}</h1>
+      <div class="header-sub">Rockwood Nursery School · Parent Portal</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-month">${monthName} ${year}</div>
+    <div class="header-url">rockwoodnurseryschool.ca</div>
+  </div>
+</div>
+<div class="amber-bar"></div>
+
+<div class="cal-wrap">
+  <div class="dow-row">
+    ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(d => `<div class="dow">${d}</div>`).join('')}
+  </div>
+  <div class="grid">${gridCells}</div>
+</div>
+
+${eventListHTML}
+
+<div class="footer">
+  <span>Rockwood Nursery School · Town Hall, 191 Main St S., Rockwood ON · 519-856-4486</span>
+  <span>Generated ${today.toLocaleDateString('en-CA', {year:'numeric',month:'long',day:'numeric'})}</span>
+</div>
+
+</body>
+</html>`);
     printWin.document.close();
   }
 

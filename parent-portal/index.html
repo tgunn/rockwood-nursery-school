@@ -805,43 +805,107 @@
   }
 
   async function fetchCalendarEvents(calId, year, month) {
-    const timeMin = new Date(year, month, 1).toISOString();
-    const timeMax = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
+    // Use iCal public URL (requires calendar to be set to public)
     const encodedId = encodeURIComponent(calId);
-    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodedId}/events?key=AIzaSyD-placeholder&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true&orderBy=startTime`;
+    const icsUrl = `https://calendar.google.com/calendar/ical/${encodedId}/public/basic.ics`;
 
-    // Try Google Calendar JSON feed (no API key needed for public calendars)
-    const feedUrl = `https://calendar.google.com/calendar/feeds/${encodedId}/public/full?alt=json&start-min=${timeMin}&start-max=${timeMax}&max-results=100`;
+    // Fetch via CORS proxy since Google blocks direct browser requests
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(icsUrl)}`;
 
     try {
-      const resp = await fetch(feedUrl);
-      if (!resp.ok) throw new Error('Feed not accessible');
-      const data = await resp.json();
-      const entries = data.feed?.entry || [];
+      const resp = await fetch(proxyUrl);
+      if (!resp.ok) throw new Error(`Fetch failed: ${resp.status}`);
+      const icsText = await resp.text();
 
-      return entries.map(e => {
-        const startRaw = e['gd$when']?.[0]?.['$t'] || e['published']?.['$t'] || '';
-        const endRaw   = e['gd$when']?.[0]?.['endTime'] || startRaw;
-        const title    = e['title']?.['$t'] || 'Event';
+      if (!icsText.includes('BEGIN:VCALENDAR')) {
+        throw new Error('Not a valid iCal response');
+      }
 
-        // Parse date — handle both date-only (YYYY-MM-DD) and datetime formats
-        const startDate = new Date(startRaw);
-        const endDate   = new Date(endRaw);
-        const isAllDay  = startRaw.length === 10; // date-only string
-
-        return {
-          title,
-          start: startDate,
-          end: endDate,
-          isAllDay,
-          description: e['content']?.['$t'] || '',
-        };
-      }).filter(e => !isNaN(e.start));
+      return parseICS(icsText, year, month);
 
     } catch (err) {
-      console.warn('Google feed failed, returning empty events:', err);
+      console.warn('Could not fetch calendar events:', err);
       return [];
     }
+  }
+
+  function parseICS(ics, year, month) {
+    const events = [];
+    // Split into VEVENT blocks
+    const vevents = ics.split('BEGIN:VEVENT').slice(1);
+
+    vevents.forEach(block => {
+      try {
+        // Unfold lines (iCal wraps long lines with \r\n followed by space)
+        const unfolded = block.replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '');
+        const lines = unfolded.split(/\r?\n/);
+
+        let summary = '';
+        let dtstart = null;
+        let dtend = null;
+        let description = '';
+        let isAllDay = false;
+
+        lines.forEach(line => {
+          if (line.startsWith('SUMMARY:')) {
+            summary = line.replace('SUMMARY:', '').trim();
+          } else if (line.startsWith('SUMMARY;')) {
+            summary = line.split(':').slice(1).join(':').trim();
+          } else if (line.startsWith('DTSTART;VALUE=DATE:')) {
+            // All-day event: YYYYMMDD
+            const d = line.replace('DTSTART;VALUE=DATE:', '').trim();
+            dtstart = parseICSDate(d);
+            isAllDay = true;
+          } else if (line.startsWith('DTSTART:') || line.startsWith('DTSTART;')) {
+            const d = line.split(':').slice(1).join(':').trim();
+            dtstart = parseICSDate(d);
+          } else if (line.startsWith('DTEND;VALUE=DATE:')) {
+            const d = line.replace('DTEND;VALUE=DATE:', '').trim();
+            dtend = parseICSDate(d);
+          } else if (line.startsWith('DTEND:') || line.startsWith('DTEND;')) {
+            const d = line.split(':').slice(1).join(':').trim();
+            dtend = parseICSDate(d);
+          } else if (line.startsWith('DESCRIPTION:')) {
+            description = line.replace('DESCRIPTION:', '').trim().replace(/\\n/g, ' ').replace(/\\,/g, ',');
+          }
+        });
+
+        if (summary && dtstart && !isNaN(dtstart)) {
+          // Filter to requested month
+          if (dtstart.getFullYear() === year && dtstart.getMonth() === month) {
+            events.push({ title: summary, start: dtstart, end: dtend || dtstart, description, isAllDay });
+          }
+        }
+      } catch (e) {
+        // skip malformed event
+      }
+    });
+
+    return events.sort((a, b) => a.start - b.start);
+  }
+
+  function parseICSDate(str) {
+    // Handles: YYYYMMDD, YYYYMMDDTHHmmss, YYYYMMDDTHHmmssZ
+    str = str.replace('Z', '').trim();
+    if (str.length === 8) {
+      // YYYYMMDD — all day, interpret as local midnight
+      return new Date(
+        parseInt(str.slice(0,4)),
+        parseInt(str.slice(4,6)) - 1,
+        parseInt(str.slice(6,8))
+      );
+    } else if (str.length >= 15) {
+      // YYYYMMDDTHHmmss
+      return new Date(
+        parseInt(str.slice(0,4)),
+        parseInt(str.slice(4,6)) - 1,
+        parseInt(str.slice(6,8)),
+        parseInt(str.slice(9,11)),
+        parseInt(str.slice(11,13)),
+        parseInt(str.slice(13,15))
+      );
+    }
+    return new Date(str);
   }
 
   function renderCalendarPDF(calTitle, calType, year, month, events) {

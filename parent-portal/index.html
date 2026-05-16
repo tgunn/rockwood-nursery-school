@@ -757,18 +757,15 @@
   }
 
   function activateCalendars() {
-    // Only load calendar iframes after successful login
-    const cleaningId = '3cc581792ac4745c6ef7a857b215b5fb42aeeefed895c0a9074f220056d23334@group.calendar.google.com';
-    const monthlyId = 'adb2e08688202f0f028f6e50e1ad113e04b748e4cd25dc85c835b8f12f696e49@group.calendar.google.com';
-
-    if (cleaningId !== 'CLEANING_CALENDAR_ID') {
-      document.getElementById('cleaning-calendar-placeholder').style.display = 'none';
-      document.getElementById('cleaning-calendar-iframe').style.display = 'block';
-    }
-    if (monthlyId !== 'adb2e08688202f0f028f6e50e1ad113e04b748e4cd25dc85c835b8f12f696e49@group.calendar.google.com') {
-      document.getElementById('monthly-calendar-placeholder').style.display = 'none';
-      document.getElementById('monthly-calendar-iframe').style.display = 'block';
-    }
+    // Activate any calendar iframe whose src doesn't contain a placeholder
+    ['cleaning', 'monthly'].forEach(type => {
+      const iframe = document.getElementById(type + '-calendar-iframe');
+      const placeholder = document.getElementById(type + '-calendar-placeholder');
+      if (iframe && !iframe.src.includes('CALENDAR_ID')) {
+        placeholder.style.display = 'none';
+        iframe.style.display = 'block';
+      }
+    });
   }
 
   function logout() {
@@ -934,6 +931,7 @@
 
     try {
       const committees = [];
+      let anySucceeded = false;
 
       for (let i = 0; i < COMMITTEE_TABS.length; i++) {
         const tabName = encodeURIComponent(COMMITTEE_TABS[i]);
@@ -941,16 +939,23 @@
 
         try {
           const response = await fetch(url);
-          if (!response.ok) throw new Error('Fetch failed');
-          const csv = await response.text();
-          const parsed = parseCommitteeCSV(csv);
+          const text = await response.text();
+
+          // Google returns an error page (html) if not public — check for CSV content
+          if (!response.ok || text.includes('<html') || text.includes('google-signin')) {
+            throw new Error('Sheet not public or accessible');
+          }
+
+          const parsed = parseCommitteeCSV(text);
           parsed.icon = COMMITTEE_ICONS[i];
           committees.push(parsed);
+          anySucceeded = true;
+
         } catch (tabErr) {
           console.warn('Could not load tab: ' + COMMITTEE_TABS[i], tabErr);
           committees.push({
             name: COMMITTEE_TABS[i] + ' Committee',
-            description: 'Details coming soon.',
+            description: 'Details coming soon — committee data will appear once the Google Sheet is publicly shared.',
             members: [],
             icon: COMMITTEE_ICONS[i],
           });
@@ -959,11 +964,7 @@
 
       loading.style.display = 'none';
 
-      if (committees.length === 0) {
-        error.style.display = 'block';
-        return;
-      }
-
+      // Always show cards — either with real data or placeholder text
       grid.innerHTML = committees.map((c, idx) => `
         <div class="committee-card">
           <div class="committee-card-header">
@@ -972,16 +973,26 @@
           </div>
           <div class="committee-card-body">
             <p class="committee-desc">${c.description}</p>
-            <div class="committee-members-label">Committee Members</div>
-            ${c.members.map(m => `
-              <div class="committee-member">
-                <div class="member-dot"></div>
-                <span>${m}</span>
-              </div>
-            `).join('')}
+            ${c.members.length > 0 ? `
+              <div class="committee-members-label">Committee Members</div>
+              ${c.members.map(m => `
+                <div class="committee-member">
+                  <div class="member-dot"></div>
+                  <span>${m}</span>
+                </div>
+              `).join('')}
+            ` : ''}
           </div>
         </div>
       `).join('');
+
+      // Show a subtle notice if data couldn't be loaded
+      if (!anySucceeded) {
+        const notice = document.createElement('div');
+        notice.style.cssText = 'grid-column:1/-1;text-align:center;padding:12px;font-size:0.8rem;color:var(--text-light);background:var(--cream);border-radius:10px;margin-top:8px;';
+        notice.innerHTML = '⚠️ Live committee data unavailable. Ensure the Google Sheet is shared as <strong>"Anyone with the link → Viewer"</strong>.';
+        grid.appendChild(notice);
+      }
 
     } catch (err) {
       console.error('Error loading committees:', err);

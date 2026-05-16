@@ -805,16 +805,18 @@
   }
 
   async function fetchCalendarEvents(calId, year, month) {
-    // Use iCal public URL (requires calendar to be set to public)
-    const encodedId = encodeURIComponent(calId);
-    const icsUrl = `https://calendar.google.com/calendar/ical/${encodedId}/public/basic.ics`;
-
-    // Fetch via CORS proxy since Google blocks direct browser requests
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(icsUrl)}`;
+    // Use the Cloudflare Worker proxy which fetches the ICS server-side
+    // Worker lives at rockwoodnurseryschool.ca/calendar-proxy
+    const calKey = calId === CALENDAR_IDS.cleaning ? 'cleaning' : 'monthly';
+    const proxyUrl = `/calendar-proxy?cal=${calKey}`;
 
     try {
       const resp = await fetch(proxyUrl);
-      if (!resp.ok) throw new Error(`Fetch failed: ${resp.status}`);
+
+      if (!resp.ok) {
+        throw new Error(`Proxy error: ${resp.status}`);
+      }
+
       const icsText = await resp.text();
 
       if (!icsText.includes('BEGIN:VCALENDAR')) {

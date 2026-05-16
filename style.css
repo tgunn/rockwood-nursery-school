@@ -170,6 +170,8 @@ h2 {
 /* ── PHILOSOPHY ── */
 #philosophy { background: white; }
 .phil-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 60px; align-items: start; }
+.phil-layout--full { grid-template-columns: 1fr; }
+.phil-layout--full .phil-grid { grid-template-columns: repeat(3, 1fr); }
 .phil-image { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); }
 .phil-image img { width: 100%; height: 380px; object-fit: cover; }
 .phil-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }

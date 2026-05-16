@@ -582,13 +582,13 @@
           ║  1. Open Google Calendar                         ║
           ║  2. Settings → your calendar → Integrate         ║
           ║  3. Copy the "Embed code" src URL                ║
-          ║  4. Replace 31f7d92deb82f7455da9ba2ecbe3249fcdc6113372bfdec612cea60a53e204d8@group.calendar.google.com below           ║
+          ║  4. Replace 3cc581792ac4745c6ef7a857b215b5fb42aeeefed895c0a9074f220056d23334@group.calendar.google.com below           ║
           ╚══════════════════════════════════════════════════╝
         -->
         <iframe
           class="calendar-embed"
           id="cleaning-calendar-iframe"
-          src="https://calendar.google.com/calendar/embed?src=31f7d92deb82f7455da9ba2ecbe3249fcdc6113372bfdec612cea60a53e204d8@group.calendar.google.com&ctz=America%2FToronto&mode=MONTH&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0"
+          src="https://calendar.google.com/calendar/embed?src=3cc581792ac4745c6ef7a857b215b5fb42aeeefed895c0a9074f220056d23334@group.calendar.google.com&ctz=America%2FToronto&mode=MONTH&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0"
           style="display:none;"
         ></iframe>
         <div class="calendar-placeholder" id="cleaning-calendar-placeholder">
@@ -612,20 +612,20 @@
           ║  1. Open Google Calendar                         ║
           ║  2. Settings → your calendar → Integrate         ║
           ║  3. Copy the "Embed code" src URL                ║
-          ║  4. Replace MONTHLY_CALENDAR_ID below            ║
+          ║  4. Replace adb2e08688202f0f028f6e50e1ad113e04b748e4cd25dc85c835b8f12f696e49@group.calendar.google.com below            ║
           ╚══════════════════════════════════════════════════╝
         -->
         <iframe
           class="calendar-embed"
           id="monthly-calendar-iframe"
-          src="https://calendar.google.com/calendar/embed?src=MONTHLY_CALENDAR_ID&ctz=America%2FToronto&mode=MONTH&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0"
+          src="https://calendar.google.com/calendar/embed?src=adb2e08688202f0f028f6e50e1ad113e04b748e4cd25dc85c835b8f12f696e49@group.calendar.google.com&ctz=America%2FToronto&mode=MONTH&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0"
           style="display:none;"
         ></iframe>
         <div class="calendar-placeholder" id="monthly-calendar-placeholder">
           <div class="ph-icon">📆</div>
           <strong>Monthly Calendar</strong>
           <p>Google Calendar will appear here once connected.</p>
-          <code>Replace MONTHLY_CALENDAR_ID in the HTML</code>
+          <code>Replace adb2e08688202f0f028f6e50e1ad113e04b748e4cd25dc85c835b8f12f696e49@group.calendar.google.com in the HTML</code>
         </div>
       </div>
 
@@ -654,11 +654,10 @@
             ║  2. Replace HANDBOOK_FILENAME.pdf below          ║
             ╚══════════════════════════════════════════════════╝
           -->
-          <a href="HANDBOOK_FILENAME.pdf" target="_blank" class="doc-btn doc-btn-primary">📖 View PDF</a>
-          <a href="HANDBOOK_FILENAME.pdf" download class="doc-btn doc-btn-secondary">⬇ Download</a>
+          <a href="ParentHandbook_2025-26.pdf" target="_blank" class="doc-btn doc-btn-primary">📖 View PDF</a>
+          <a href="ParentHandbook_2025-26.pdf" download="RNS_Parent_Handbook_2025-26.pdf" class="doc-btn doc-btn-secondary">⬇ Download</a>
         </div>
-        <div class="doc-placeholder-note">
-          📌 Upload your PDF and replace <code>HANDBOOK_FILENAME.pdf</code> in the HTML
+        <div class="doc-placeholder-note" style="display:none;">
         </div>
       </div>
 
@@ -759,14 +758,14 @@
 
   function activateCalendars() {
     // Only load calendar iframes after successful login
-    const cleaningId = '31f7d92deb82f7455da9ba2ecbe3249fcdc6113372bfdec612cea60a53e204d8@group.calendar.google.com';
-    const monthlyId = 'MONTHLY_CALENDAR_ID';
+    const cleaningId = '3cc581792ac4745c6ef7a857b215b5fb42aeeefed895c0a9074f220056d23334@group.calendar.google.com';
+    const monthlyId = 'adb2e08688202f0f028f6e50e1ad113e04b748e4cd25dc85c835b8f12f696e49@group.calendar.google.com';
 
     if (cleaningId !== 'CLEANING_CALENDAR_ID') {
       document.getElementById('cleaning-calendar-placeholder').style.display = 'none';
       document.getElementById('cleaning-calendar-iframe').style.display = 'block';
     }
-    if (monthlyId !== 'MONTHLY_CALENDAR_ID') {
+    if (monthlyId !== 'adb2e08688202f0f028f6e50e1ad113e04b748e4cd25dc85c835b8f12f696e49@group.calendar.google.com') {
       document.getElementById('monthly-calendar-placeholder').style.display = 'none';
       document.getElementById('monthly-calendar-iframe').style.display = 'block';
     }
@@ -917,10 +916,10 @@
 
   // ─────────────────────────────────────────────────
   // COMMITTEES — fetch from Google Sheets
-  // Sheet: 1I1-M8o0Jioihdayp3A76k_d6hVBwKuBBZI_izNOIO9M
+  // Sheet: 1Doo3CEH6YXOH_0AeQcbNsaTtF4n42R9GSypzVEPng9E
   // Tabs: Fundraising, Graduation, Feild Trip, Outreach
   // ─────────────────────────────────────────────────
-  const SHEET_ID = '1I1-M8o0Jioihdayp3A76k_d6hVBwKuBBZI_izNOIO9M';
+  const SHEET_ID = '1Doo3CEH6YXOH_0AeQcbNsaTtF4n42R9GSypzVEPng9E';
   const COMMITTEE_TABS = ['Fundraising', 'Graduation', 'Feild Trip', 'Outreach'];
   const COMMITTEE_ICONS = ['💰', '🎓', '🚌', '🤝'];
 

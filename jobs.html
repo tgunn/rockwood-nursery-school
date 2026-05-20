@@ -298,6 +298,109 @@
     .general-interest { padding: 28px 24px; }
     .general-interest-btn { width: 100%; text-align: center; }
   }
+  /* ── APPLY MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 999;
+    background: rgba(44,36,22,0.55);
+    backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    max-width: 520px; width: 100%;
+    overflow: hidden;
+    animation: modalIn 0.25s ease;
+  }
+  @keyframes modalIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .modal-header {
+    background: var(--green);
+    padding: 22px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-header h3 {
+    font-family: 'Fredoka One', cursive;
+    color: white; font-size: 1.3rem; margin: 0;
+  }
+  .modal-close {
+    background: rgba(255,255,255,0.15); border: none;
+    color: white; width: 30px; height: 30px;
+    border-radius: 50%; font-size: 1rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.3); }
+  .modal-body { padding: 28px; }
+  .modal-body p { font-size: 0.9rem; color: var(--text-light); line-height: 1.6; margin-bottom: 20px; }
+  .modal-email-box {
+    background: var(--cream);
+    border: 2px solid var(--green-pale);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+  }
+  .modal-email-box .label {
+    font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-light); margin-bottom: 4px;
+  }
+  .modal-email-address {
+    font-size: 1.05rem; font-weight: 700;
+    color: var(--green); letter-spacing: 0.01em;
+  }
+  .modal-copy-btn {
+    background: none; border: 1px solid var(--green-pale);
+    color: var(--text-light); padding: 4px 12px;
+    border-radius: 50px; font-size: 0.75rem; font-weight: 700;
+    cursor: pointer; margin-top: 8px; transition: all 0.2s;
+    font-family: 'Nunito', sans-serif;
+  }
+  .modal-copy-btn:hover { background: var(--green); color: white; border-color: var(--green); }
+  .modal-copy-btn.copied { background: var(--green); color: white; border-color: var(--green); }
+  .modal-subject-box {
+    background: var(--green-pale);
+    border-radius: 10px; padding: 12px 16px;
+    margin-bottom: 20px;
+  }
+  .modal-subject-box .label {
+    font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-light); margin-bottom: 4px;
+  }
+  .modal-subject-box p {
+    font-size: 0.85rem; color: var(--text);
+    font-weight: 600; margin: 0; line-height: 1.4;
+  }
+  .modal-include {
+    font-size: 0.82rem; color: var(--text-light);
+    line-height: 1.6; margin-bottom: 0 !important;
+  }
+  .modal-include li { margin-left: 16px; margin-bottom: 2px; }
+  .modal-footer {
+    padding: 16px 28px 24px;
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .modal-try-mailto {
+    flex: 1; text-align: center;
+    background: var(--green); color: white;
+    padding: 12px 20px; border-radius: 50px;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 0.88rem; text-decoration: none;
+    transition: background 0.2s;
+  }
+  .modal-try-mailto:hover { background: var(--green-light); }
+  .modal-dismiss {
+    background: var(--cream); color: var(--text-light);
+    border: 1px solid var(--green-pale);
+    padding: 12px 20px; border-radius: 50px;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 0.88rem; cursor: pointer; transition: all 0.2s;
+  }
+  .modal-dismiss:hover { background: var(--green-pale); }
 </style>
 </head>
 <body>
@@ -447,9 +550,9 @@
 
     <div class="job-card-footer">
       <span class="job-posted">Rockwood Nursery School is an equal opportunity employer. We thank all applicants for their interest; however, only those selected for an interview will be contacted.</span>
-      <a href="mailto:rockwoodnursery@gmail.com?subject=RECE Application — Rockwood Nursery School 2026&body=Hi,%0A%0AI am writing to apply for the Registered Early Childhood Educator (RECE) position at Rockwood Nursery School for the 2026-2027 school year.%0A%0APlease find my details below:%0A%0AName:%0APhone:%0ARECE Licence #:%0AYears of Experience:%0AAvailability:%0A%0AI have attached my resume, cover letter, and references.%0A%0AThank you for your consideration." class="job-apply-btn">
+      <button class="job-apply-btn" onclick="applyNow()">
         ✉️ Apply Now
-      </a>
+      </button>
     </div>
   </div>
 
@@ -464,6 +567,44 @@
     </a>
   </div>
 
+</div>
+
+<!-- APPLY MODAL -->
+<div class="modal-overlay" id="applyModal" onclick="closeModalIfOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✉️ Apply for RECE Position</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Send your application to the email address below. If the button doesn't open your email app, copy the address and paste it into your preferred email provider (Gmail, Outlook, etc.).</p>
+
+      <div class="modal-email-box">
+        <div class="label">Send your application to</div>
+        <div class="modal-email-address">rockwoodnursery@gmail.com</div>
+        <button class="modal-copy-btn" id="copyBtn" onclick="copyEmail()">📋 Copy address</button>
+      </div>
+
+      <div class="modal-subject-box">
+        <div class="label">Use this subject line</div>
+        <p>RECE Application — Rockwood Nursery School 2026</p>
+      </div>
+
+      <p class="modal-include">Please include in your email:
+        <ul>
+          <li>Your full name and phone number</li>
+          <li>RECE Licence number</li>
+          <li>Years of experience</li>
+          <li>Resume and cover letter (as attachments)</li>
+          <li>Two professional references</li>
+        </ul>
+      </p>
+    </div>
+    <div class="modal-footer">
+      <a href="mailto:rockwoodnursery@gmail.com?subject=RECE%20Application%20%E2%80%94%20Rockwood%20Nursery%20School%202026&body=Hi%2C%0A%0AI%20am%20writing%20to%20apply%20for%20the%20Registered%20Early%20Childhood%20Educator%20(RECE)%20position%20at%20Rockwood%20Nursery%20School%20for%20the%202026-2027%20school%20year.%0A%0AName%3A%0APhone%3A%0ARECE%20Licence%20%23%3A%0AYears%20of%20Experience%3A%0AAvailability%3A%0A%0AI%20have%20attached%20my%20resume%2C%20cover%20letter%2C%20and%20references.%0A%0AThank%20you%20for%20your%20consideration." class="modal-try-mailto">Open Email App</a>
+      <button class="modal-dismiss" onclick="closeModal()">Close</button>
+    </div>
+  </div>
 </div>
 
 <!-- SOCIAL STRIP -->
@@ -525,6 +666,45 @@
     el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     observer.observe(el);
   });
+
+  // ── APPLY MODAL ──
+  const MAILTO = 'mailto:rockwoodnursery@gmail.com?subject=RECE%20Application%20%E2%80%94%20Rockwood%20Nursery%20School%202026&body=Hi%2C%0A%0AI%20am%20writing%20to%20apply%20for%20the%20RECE%20position%20at%20Rockwood%20Nursery%20School.%0A%0AName%3A%0APhone%3A%0ARECE%20Licence%20%23%3A%0AYears%20of%20Experience%3A%0A%0AI%20have%20attached%20my%20resume%2C%20cover%20letter%2C%20and%20references.%0A%0AThank%20you.';
+
+  function applyNow() {
+    // Attempt mailto — works silently when email client is configured
+    const a = document.createElement('a');
+    a.href = MAILTO;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    // Always show modal after short delay — catches silent failures
+    setTimeout(() => {
+      document.getElementById('applyModal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }, 400);
+  }
+
+  function closeModal() {
+    document.getElementById('applyModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function closeModalIfOverlay(e) {
+    if (e.target === document.getElementById('applyModal')) closeModal();
+  }
+
+  function copyEmail() {
+    navigator.clipboard.writeText('rockwoodnursery@gmail.com').then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✅ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 Copy address'; btn.classList.remove('copied'); }, 2500);
+    }).catch(() => {
+      document.getElementById('copyBtn').textContent = 'rockwoodnursery@gmail.com';
+    });
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
 
 </body>

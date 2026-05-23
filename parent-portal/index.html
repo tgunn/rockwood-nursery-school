@@ -805,28 +805,36 @@
   }
 
   async function fetchCalendarEvents(calId, year, month) {
-    // Use the Cloudflare Worker proxy which fetches the ICS server-side
-    // Worker lives at rockwoodnurseryschool.ca/calendar-proxy
     const calKey = calId === CALENDAR_IDS.cleaning ? 'cleaning' : 'monthly';
     const proxyUrl = `/calendar-proxy?cal=${calKey}`;
 
     try {
       const resp = await fetch(proxyUrl);
+      const icsText = await resp.text();
+
+      console.log(`[Calendar Debug] cal=${calKey}, status=${resp.status}, length=${icsText.length}`);
+      console.log(`[Calendar Debug] First 300 chars:`, icsText.slice(0, 300));
 
       if (!resp.ok) {
+        console.error(`[Calendar Debug] Proxy returned error ${resp.status}:`, icsText.slice(0, 200));
         throw new Error(`Proxy error: ${resp.status}`);
       }
 
-      const icsText = await resp.text();
-
       if (!icsText.includes('BEGIN:VCALENDAR')) {
+        console.error('[Calendar Debug] Response is not iCal — got:', icsText.slice(0, 200));
         throw new Error('Not a valid iCal response');
       }
 
-      return parseICS(icsText, year, month);
+      const eventCount = (icsText.match(/BEGIN:VEVENT/g) || []).length;
+      console.log(`[Calendar Debug] Total events in ICS: ${eventCount}`);
+
+      const events = parseICS(icsText, year, month);
+      console.log(`[Calendar Debug] Events in ${year}/${month + 1}: ${events.length}`, events.map(e => e.title));
+
+      return events;
 
     } catch (err) {
-      console.warn('Could not fetch calendar events:', err);
+      console.warn('[Calendar Debug] fetchCalendarEvents failed:', err);
       return [];
     }
   }
@@ -911,6 +919,14 @@
   }
 
   function renderCalendarPDF(calTitle, calType, year, month, events) {
+    // Show a visible debug notice if no events found
+    const debugInfo = events.length === 0
+      ? `<div style="background:#fef9c3;border:2px solid #f5c842;border-radius:10px;padding:14px 18px;margin-bottom:16px;font-family:monospace;font-size:11px;color:#7a5500;">
+          <strong>⚠️ No events found for ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][month]} ${year}</strong><br>
+          Check browser console (F12 → Console) for [Calendar Debug] messages to diagnose.<br>
+          Common causes: calendar not public · worker route not set up · events are in a different month
+         </div>`
+      : '';
     const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     const monthName  = monthNames[month];
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -1038,6 +1054,8 @@
   <span>Preview — <strong>${calTitle} · ${monthName} ${year}</strong> · Rockwood Nursery School</span>
   <button class="print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
 </div>
+
+${debugInfo}
 
 <div class="header">
   <div class="header-left">

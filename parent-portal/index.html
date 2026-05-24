@@ -356,6 +356,25 @@
     color: var(--green); font-weight: 700; font-family: monospace;
   }
 
+  /* Month navigation */
+  .cal-month-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px 8px;
+    border-bottom: 1px solid var(--green-pale);
+  }
+  .cal-nav-arrow {
+    background: var(--green-pale); border: none;
+    color: var(--green); width: 30px; height: 30px;
+    border-radius: 50%; font-size: 1.1rem; font-weight: 700;
+    cursor: pointer; transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cal-nav-arrow:hover { background: var(--green); color: white; }
+  .cal-month-label {
+    font-family: 'Fredoka One', cursive;
+    color: var(--green); font-size: 1rem;
+  }
+
   /* PDF export button */
   .cal-pdf-btn {
     margin-left: auto;
@@ -579,6 +598,11 @@
           <h3>Cleaning Calendar</h3>
           <button class="cal-pdf-btn" onclick="exportCalendarPDF('cleaning', 'Cleaning Calendar')" data-type="cleaning">📄 Export PDF</button>
         </div>
+        <div class="cal-month-nav">
+          <button class="cal-nav-arrow" onclick="changeMonth('cleaning', -1)">‹</button>
+          <span class="cal-month-label" id="cleaning-month-label"></span>
+          <button class="cal-nav-arrow" onclick="changeMonth('cleaning', 1)">›</button>
+        </div>
         <!--
           ╔══════════════════════════════════════════════════╗
           ║  TO EMBED CLEANING CALENDAR:                     ║
@@ -608,6 +632,11 @@
           <span>📆</span>
           <h3>Monthly Calendar</h3>
           <button class="cal-pdf-btn" onclick="exportCalendarPDF('monthly', 'Monthly Calendar')" data-type="monthly">📄 Export PDF</button>
+        </div>
+        <div class="cal-month-nav">
+          <button class="cal-nav-arrow" onclick="changeMonth('monthly', -1)">‹</button>
+          <span class="cal-month-label" id="monthly-month-label"></span>
+          <button class="cal-nav-arrow" onclick="changeMonth('monthly', 1)">›</button>
         </div>
         <!--
           ╔══════════════════════════════════════════════════╗
@@ -734,6 +763,7 @@
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('portal-screen').style.display = 'block';
     activateCalendars();
+    initCalendarControls();
     loadCommittees();
   }
 
@@ -781,23 +811,75 @@
     monthly:  'adb2e08688202f0f028f6e50e1ad113e04b748e4cd25dc85c835b8f12f696e49@group.calendar.google.com',
   };
 
+  // ─────────────────────────────────────────────────
+  // CALENDAR STATE — track which month is shown
+  // since we can't read the iframe's internal state
+  // ─────────────────────────────────────────────────
+  const calendarState = {
+    cleaning: { year: new Date().getFullYear(), month: new Date().getMonth() },
+    monthly:  { year: new Date().getFullYear(), month: new Date().getMonth() },
+  };
+
+  const MONTH_NAMES = ['January','February','March','April','May','June',
+                        'July','August','September','October','November','December'];
+
+  function initCalendarControls() {
+    ['cleaning', 'monthly'].forEach(type => {
+      updateCalendarDisplay(type);
+    });
+  }
+
+  function updateCalendarDisplay(type) {
+    const state = calendarState[type];
+    const calId = CALENDAR_IDS[type];
+    const iframe = document.getElementById(type + '-calendar-iframe');
+    const label  = document.getElementById(type + '-month-label');
+
+    if (label) {
+      label.textContent = MONTH_NAMES[state.month] + ' ' + state.year;
+    }
+
+    // Update iframe src to show correct month
+    // Google Calendar embed uses 'dates' param: YYYYMMDD/YYYYMMDD for range
+    const firstDay = new Date(state.year, state.month, 1);
+    const lastDay  = new Date(state.year, state.month + 1, 0);
+    const fmt = d => d.getFullYear().toString() +
+                     String(d.getMonth()+1).padStart(2,'0') +
+                     String(d.getDate()).padStart(2,'0');
+
+    const baseUrl = `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(calId)}&ctz=America%2FToronto&mode=MONTH&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&dates=${fmt(firstDay)}%2F${fmt(lastDay)}`;
+
+    if (iframe && !iframe.src.includes('CALENDAR_ID')) {
+      iframe.src = baseUrl;
+    }
+  }
+
+  function changeMonth(type, delta) {
+    const state = calendarState[type];
+    state.month += delta;
+    if (state.month > 11) { state.month = 0; state.year++; }
+    if (state.month < 0)  { state.month = 11; state.year--; }
+    updateCalendarDisplay(type);
+  }
+
+  // ─────────────────────────────────────────────────
+  // PDF EXPORT — uses tracked month state
+  // ─────────────────────────────────────────────────
   async function exportCalendarPDF(calType, calTitle) {
     const btn = document.querySelector(`[data-type="${calType}"]`);
     const origText = btn.innerHTML;
     btn.innerHTML = '⏳ Loading…';
     btn.disabled = true;
 
-    try {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth(); // 0-indexed
+    const state = calendarState[calType];
+    const { year, month } = state;
 
-      // Fetch events for current month
+    try {
       const events = await fetchCalendarEvents(CALENDAR_IDS[calType], year, month);
       renderCalendarPDF(calTitle, calType, year, month, events);
     } catch (err) {
       console.error('PDF export error:', err);
-      alert('Could not load calendar events. Please ensure the calendar is set to public in Google Calendar settings.');
+      alert('Could not load calendar events. Please check the browser console for details.');
     } finally {
       btn.innerHTML = origText;
       btn.disabled = false;

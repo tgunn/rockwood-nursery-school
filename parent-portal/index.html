@@ -841,53 +841,53 @@
 
   function parseICS(ics, year, month) {
     const events = [];
-    // Split into VEVENT blocks
     const vevents = ics.split('BEGIN:VEVENT').slice(1);
 
     vevents.forEach(block => {
       try {
-        // Unfold lines (iCal wraps long lines with \r\n followed by space)
+        // Unfold lines (iCal wraps long lines with \r\n + space/tab)
         const unfolded = block.replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '');
         const lines = unfolded.split(/\r?\n/);
 
         let summary = '';
         let dtstart = null;
-        let dtend = null;
-        let description = '';
         let isAllDay = false;
 
         lines.forEach(line => {
+          // SUMMARY
           if (line.startsWith('SUMMARY:')) {
-            summary = line.replace('SUMMARY:', '').trim();
+            summary = line.slice(8).trim();
           } else if (line.startsWith('SUMMARY;')) {
             summary = line.split(':').slice(1).join(':').trim();
-          } else if (line.startsWith('DTSTART;VALUE=DATE:')) {
-            // All-day event: YYYYMMDD
-            const d = line.replace('DTSTART;VALUE=DATE:', '').trim();
+          }
+          // All-day: DTSTART;VALUE=DATE:YYYYMMDD
+          else if (line.startsWith('DTSTART;VALUE=DATE:')) {
+            const d = line.slice(19).trim();
             dtstart = parseICSDate(d);
             isAllDay = true;
-          } else if (line.startsWith('DTSTART:') || line.startsWith('DTSTART;')) {
+          }
+          // Timed with TZID: DTSTART;TZID=America/Toronto:20260523T100000
+          else if (/^DTSTART;TZID=/.test(line)) {
             const d = line.split(':').slice(1).join(':').trim();
             dtstart = parseICSDate(d);
-          } else if (line.startsWith('DTEND;VALUE=DATE:')) {
-            const d = line.replace('DTEND;VALUE=DATE:', '').trim();
-            dtend = parseICSDate(d);
-          } else if (line.startsWith('DTEND:') || line.startsWith('DTEND;')) {
-            const d = line.split(':').slice(1).join(':').trim();
-            dtend = parseICSDate(d);
-          } else if (line.startsWith('DESCRIPTION:')) {
-            description = line.replace('DESCRIPTION:', '').trim().replace(/\\n/g, ' ').replace(/\\,/g, ',');
+          }
+          // UTC or plain: DTSTART:20260523T100000Z
+          else if (line.startsWith('DTSTART:')) {
+            const d = line.slice(8).trim();
+            dtstart = parseICSDate(d);
           }
         });
 
         if (summary && dtstart && !isNaN(dtstart)) {
-          // Filter to requested month
-          if (dtstart.getFullYear() === year && dtstart.getMonth() === month) {
-            events.push({ title: summary, start: dtstart, end: dtend || dtstart, description, isAllDay });
+          // Use local date components for matching — avoids UTC offset shifting events to wrong month
+          const evYear  = dtstart.getFullYear();
+          const evMonth = dtstart.getMonth();
+          if (evYear === year && evMonth === month) {
+            events.push({ title: summary, start: dtstart, isAllDay });
           }
         }
       } catch (e) {
-        // skip malformed event
+        console.warn('[Calendar Debug] Skipped malformed event:', e);
       }
     });
 
@@ -895,26 +895,31 @@
   }
 
   function parseICSDate(str) {
-    // Handles: YYYYMMDD, YYYYMMDDTHHmmss, YYYYMMDDTHHmmssZ
-    str = str.replace('Z', '').trim();
-    if (str.length === 8) {
-      // YYYYMMDD — all day, interpret as local midnight
+    str = str.trim();
+
+    // All-day: YYYYMMDD
+    if (/^\d{8}$/.test(str)) {
       return new Date(
-        parseInt(str.slice(0,4)),
-        parseInt(str.slice(4,6)) - 1,
-        parseInt(str.slice(6,8))
-      );
-    } else if (str.length >= 15) {
-      // YYYYMMDDTHHmmss
-      return new Date(
-        parseInt(str.slice(0,4)),
-        parseInt(str.slice(4,6)) - 1,
-        parseInt(str.slice(6,8)),
-        parseInt(str.slice(9,11)),
-        parseInt(str.slice(11,13)),
-        parseInt(str.slice(13,15))
+        parseInt(str.slice(0, 4)),
+        parseInt(str.slice(4, 6)) - 1,
+        parseInt(str.slice(6, 8))
       );
     }
+
+    // With time: YYYYMMDDTHHmmss or YYYYMMDDTHHmmssZ
+    const m = str.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/);
+    if (m) {
+      const [, y, mo, d, h, min, s, utc] = m;
+      if (utc === 'Z') {
+        // UTC — convert to local
+        return new Date(Date.UTC(+y, +mo - 1, +d, +h, +min, +s));
+      } else {
+        // Local / TZID — treat as local time directly
+        return new Date(+y, +mo - 1, +d, +h, +min, +s);
+      }
+    }
+
+    // Fallback
     return new Date(str);
   }
 
